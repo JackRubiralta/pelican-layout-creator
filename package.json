@@ -1,6 +1,6 @@
 {
-  "name": "pelican-editor",
-  "homepage": "https://jackrubiralta.github.io/pelican-editor/",
+  "name": "pelican-layout-creator",
+  "homepage": "https://jackrubiralta.github.io/pelican-layout-creator/",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
