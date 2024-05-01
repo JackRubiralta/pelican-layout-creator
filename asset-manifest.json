@@ -1,0 +1,15 @@
+{
+  "files": {
+    "main.css": "/pelican-layout-creator/static/css/main.e6c13ad2.css",
+    "main.js": "/pelican-layout-creator/static/js/main.2b01170e.js",
+    "static/js/453.0842cd1a.chunk.js": "/pelican-layout-creator/static/js/453.0842cd1a.chunk.js",
+    "index.html": "/pelican-layout-creator/index.html",
+    "main.e6c13ad2.css.map": "/pelican-layout-creator/static/css/main.e6c13ad2.css.map",
+    "main.2b01170e.js.map": "/pelican-layout-creator/static/js/main.2b01170e.js.map",
+    "453.0842cd1a.chunk.js.map": "/pelican-layout-creator/static/js/453.0842cd1a.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.e6c13ad2.css",
+    "static/js/main.2b01170e.js"
+  ]
+}
