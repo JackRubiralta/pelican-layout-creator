@@ -250,8 +250,7 @@ const styles = {
     border: "1px solid #ddd",
     borderRadius: "8px",
     boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
-    width: "370px", // Set a specific width
-    margin: "5px 5px", // Center the form on the page
+    width: "auto", // Set a specific width
   },
   form: {
     display: "flex",

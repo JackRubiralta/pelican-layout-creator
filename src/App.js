@@ -329,11 +329,18 @@ const phoneContainer = {
   msOverflowStyle: "none", // Hides scrollbar for IE 10+
 };
 const columnContainer = {
-  display: "flex",
-  flexDirection: "column",
-  alignItems: "center", // Center children horizontally
-  justifyContent: "start", // Align children to the start of the flex direction
-  margin: "0 auto", // Centers the container
+  marginTop: "50px",
+
+  width: "402px", // Typical width of a modern smartphone
+  height: "780px", // Typical height of a modern smartphone
+  border: "1px solid #ddd", // Adds a subtle border to mimic a phone
+  margin: "0", // Centers the container on the page
+  boxShadow: "0 0 10px rgba(0,0,0,0.1)", // Adds a subtle shadow for a 3D effect
+  overflowY: "scroll", // Allows vertical scrolling within the container
+  overflowX: "hidden", // Prevents horizontal scrolling
+  WebkitOverflowScrolling: "touch", // Optimizes scrolling on iOS devices
+  scrollbarWidth: "none", // Hides scrollbar for Firefox
+  msOverflowStyle: "none", // Hides scrollbar for IE 10+
 };
 // Additional style for hiding the scrollbar in Webkit browsers like Chrome and Safari
 const webkitScrollbarStyles = {
@@ -345,7 +352,7 @@ const appContainer = {
   display: "flex", // Enables flexbox layout
   justifyContent: "center", // Centers the children horizontally
   alignItems: "start", // Aligns children to the top
-  gap: "20px", // Adds space between the children
+  gap: "5px", // Adds space between the children
   paddingTop: "50px",
 };
 
