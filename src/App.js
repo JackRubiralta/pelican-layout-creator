@@ -3,7 +3,9 @@ import React, { useState } from "react";
 import ArticleList from "./IssueDisplayer/ArticleList";
 import ArticlePage from "./IssueDisplayer/ArticlePage"; // Make sure this import path is correct
 import ArticleSettings from "./IssueDisplayer/ArticleSettings"; // Import the settings component
-import FetchIssueData from './IssueDisplayer/FetchIssueData'; // Adjust path as needed
+import AddArticle from './IssueDisplayer/AddArticle'; // Import the new component
+import FetchIssueData from './IssueDisplayer/FetchIssueData';
+import ArticleManagement from './IssueDisplayer/ArticleManagement'; // Adjust path as needed
 
 const App = () => {
   const [articles, setArticles] = useState({});
@@ -165,6 +167,7 @@ const App = () => {
         text: type === "paragraph" || type === "header" ? "New text..." : undefined, // default text for paragraphs or headers
         source: type === "image" ? "" : undefined, // default source URL for images
         caption: type === "image" ? "New caption..." : undefined, // default caption for images
+        items: type === 'list' ? ["Enter list item here...", "Enter list item here..."] : undefined, 
       };
     
       
@@ -185,12 +188,83 @@ const App = () => {
         return newArticles;
       }, {});
     });
+
+  };
+
+  const deleteLastContentItem = () => {
+    if (!currentArticleID) return; // Do nothing if no article is selected
+  
+    setArticles(prevArticles => {
+      // Find the correct section and article
+      const sections = Object.keys(prevArticles);
+      for (const section of sections) {
+        const articleIndex = prevArticles[section].findIndex(article => article.id === currentArticleID);
+        if (articleIndex !== -1) {
+          // Copy the article's content and remove the last item if it exists
+          const newArticle = { ...prevArticles[section][articleIndex] };
+          if (newArticle.content && newArticle.content.length > 0) {
+            newArticle.content = newArticle.content.slice(0, -1);
+          }
+  
+          // Construct the new articles array for the section
+          const newArticlesForSection = [
+            ...prevArticles[section].slice(0, articleIndex),
+            newArticle,
+            ...prevArticles[section].slice(articleIndex + 1)
+          ];
+  
+          // Return the updated articles state with the modified section
+          return {
+            ...prevArticles,
+            [section]: newArticlesForSection
+          };
+        }
+      }
+      return prevArticles; // In case no modifications are necessary
+    });
   };
   
 
+  const moveArticle = (direction) => {
+    if (!currentArticleID) return;
+    const sectionKeys = Object.keys(articles);
+    for (const section of sectionKeys) {
+      const index = articles[section].findIndex(article => article.id === currentArticleID);
+      if (index === -1) continue; // Current article not found in this section
+  
+      // Calculate new index based on direction
+      const newIndex = direction === 'up' ? index - 1 : index + 1;
+      if (newIndex < 0 || newIndex >= articles[section].length) continue; // Ignore if new index is out of bounds
+  
+      // Swap articles in the array
+      const newArticlesList = [...articles[section]];
+      [newArticlesList[index], newArticlesList[newIndex]] = [newArticlesList[newIndex], newArticlesList[index]];
+  
+      // Update the articles state with the new array
+      setArticles(prev => ({
+        ...prev,
+        [section]: newArticlesList
+      }));
+      break; // Exit after moving the article
+    }
+  };
+  
+  const deleteArticle = () => {
+    if (!currentArticleID) return;
+    const updatedArticles = {};
+    Object.keys(articles).forEach(section => {
+      updatedArticles[section] = articles[section].filter(article => article.id !== currentArticleID);
+    });
+    setArticles(updatedArticles);
+    setCurrentArticleID(null); // Reset current article ID if it's the one being deleted
+  };
+  
   return (
     <div style={appContainer}>
+      <div style={columnContainer}>
           <FetchIssueData setArticles={setArticles} articles={articles} />
+          <AddArticle articles={articles} setArticles={setArticles} /> {/* Add the new component here */}
+          </div>
 
       <div style={phoneContainer}>
         <ArticleList
@@ -202,6 +276,7 @@ const App = () => {
           setCurrentArticleID={setCurrentArticleID}
           onMainImageUpload={onMainImageUpload}
         />
+
       </div>
       <div style={phoneContainer}>
         {currentArticle ? (
@@ -210,6 +285,7 @@ const App = () => {
             updateArticleContent={updateArticleContent}
             updateMainImageCaption={updateMainImageCaption}
             addNewContent={addNewContent}
+            deleteLastContentItem={deleteLastContentItem}
           />
         ) : (
           <p>Select an article</p>
@@ -217,15 +293,24 @@ const App = () => {
 
         
       </div>
+      <div style={phoneContainer}>
 
       {currentArticle ? (
+        <div>
           <ArticleSettings
             article={currentArticle}
             onUpdate={handleUpdateArticleSettings}
           />
+          <ArticleManagement
+          moveArticle={moveArticle}
+          deleteArticle={deleteArticle}
+        />
+        </div>
         ) : (
           <p>Select an article</p>
         )}
+      </div>
+
     </div>
   );
 };
@@ -233,7 +318,7 @@ const phoneContainer = {
   marginTop: "50px",
 
   width: "375px", // Typical width of a modern smartphone
-  height: "850px", // Typical height of a modern smartphone
+  height: "780px", // Typical height of a modern smartphone
   border: "1px solid #ddd", // Adds a subtle border to mimic a phone
   margin: "auto", // Centers the container on the page
   boxShadow: "0 0 10px rgba(0,0,0,0.1)", // Adds a subtle shadow for a 3D effect
@@ -243,7 +328,13 @@ const phoneContainer = {
   scrollbarWidth: "none", // Hides scrollbar for Firefox
   msOverflowStyle: "none", // Hides scrollbar for IE 10+
 };
-
+const columnContainer = {
+  display: "flex",
+  flexDirection: "column",
+  alignItems: "center", // Center children horizontally
+  justifyContent: "start", // Align children to the start of the flex direction
+  margin: "0 auto", // Centers the container
+};
 // Additional style for hiding the scrollbar in Webkit browsers like Chrome and Safari
 const webkitScrollbarStyles = {
   "&::-webkit-scrollbar": {

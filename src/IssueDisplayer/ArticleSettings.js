@@ -21,20 +21,17 @@ const ArticleSettings = ({ article, onUpdate }) => {
 
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
-    setSettings(prevSettings => ({
-      ...prevSettings,
+    const newSettings = {
+      ...settings,
       [name]: type === 'checkbox' ? checked : value
-    }));
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
+    };
+    setSettings(newSettings);
     if (onUpdate && article) {
       onUpdate({
         ...article,
-        image: { ...article.image, show: settings.showImage, position: settings.imagePosition },
-        title: { ...article.title, size: settings.titleSize },
-        summary: { ...article.summary, show: settings.showSummary }
+        image: { ...article.image, show: newSettings.showImage, position: newSettings.imagePosition },
+        title: { ...article.title, size: newSettings.titleSize },
+        summary: { ...article.summary, show: newSettings.showSummary }
       });
     }
   };
@@ -45,7 +42,7 @@ const ArticleSettings = ({ article, onUpdate }) => {
 
   return (
     <div style={styles.formContainer}>
-      <form onSubmit={handleSubmit} style={styles.form}>
+      <div style={styles.form}>
         <div style={styles.inputGroup}>
           <label style={styles.label}>Show Image:</label>
           <input
@@ -77,7 +74,7 @@ const ArticleSettings = ({ article, onUpdate }) => {
             onChange={handleInputChange}
             style={styles.select}
           >
-            <option value="big">big</option>
+            <option value="big">Big</option>
             <option value="medium">Medium</option>
             <option value="small">Small</option>
           </select>
@@ -92,8 +89,7 @@ const ArticleSettings = ({ article, onUpdate }) => {
             style={styles.checkbox}
           />
         </div>
-        <button type="submit" style={styles.button}>Apply Changes</button>
-      </form>
+      </div>
     </div>
   );
 };
@@ -132,16 +128,6 @@ const styles = {
   checkbox: {
     marginLeft: '10px'
   },
-  button: {
-    background: '#007bff',
-    color: 'white',
-    border: 'none',
-    padding: '10px 15px',
-    fontSize: '16px',
-    borderRadius: '5px',
-    cursor: 'pointer',
-    marginTop: '20px'
-  }
 };
 
 export default ArticleSettings;

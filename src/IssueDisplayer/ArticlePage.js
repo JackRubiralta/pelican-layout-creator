@@ -2,7 +2,7 @@ import React from "react";
 import Photos from "./Photos"; // Adapt Photos for web as needed
 import { theme } from "./theme";
 
-const ArticlePage = ({ article, updateArticleContent, updateMainImageCaption, addNewContent, onMainImageUpload }) => {
+const ArticlePage = ({ article, updateArticleContent, updateMainImageCaption, addNewContent, onMainImageUpload, deleteLastContentItem }) => {
   if (!article) {
     return <div style={styles.center}><p>Loading...</p></div>;
   }
@@ -17,6 +17,97 @@ const ArticlePage = ({ article, updateArticleContent, updateMainImageCaption, ad
     marginTop: article.image && article.image.position === "top" ? theme.spacing.small : 0
   };
 
+  const handleListKeyDown = (e, parentIndex, index) => {
+    if (e.key === 'Enter') {
+      e.preventDefault(); // Prevent default Enter behavior (newline)
+      insertListItem(parentIndex, index + 1);
+    } else if (e.key === 'Backspace' && e.currentTarget.textContent === '') {
+      e.preventDefault(); // Prevent default Backspace behavior (browser navigation)
+      if (article.content[parentIndex].items.length > 1) {
+        removeListItem(parentIndex, index);
+      }
+    }
+  };
+  
+  const insertListItem = (parentIndex, index) => {
+    const newItems = [...article.content[parentIndex].items];
+    newItems.splice(index, 0, "Enter list item here..."); // Include filler text
+    updateArticleContent({ items: newItems }, article.id, parentIndex);
+    // Wait for the state update and then focus the new item
+    setTimeout(() => {
+      const newElement = document.querySelector(`[data-index='${parentIndex}-${index}']`);
+      if (newElement) {
+        newElement.focus(); // Set focus to the new list item
+      }
+    }, 0);
+  };
+  
+  
+  const removeListItem = (parentIndex, index) => {
+    const newItems = [...article.content[parentIndex].items];
+    if (newItems.length > 1) {
+      newItems.splice(index, 1); // Remove item at the index
+      updateArticleContent({ items: newItems }, article.id, parentIndex);
+      // Focus management
+      setTimeout(() => {
+        // Try to set focus to the previous item, if it exists; otherwise, set to the next item
+        const previousIndex = index - 1;
+        const newIndex = previousIndex >= 0 ? previousIndex : index;
+        const focusElement = document.querySelector(`[data-index='${parentIndex}-${newIndex}']`);
+        if (focusElement) {
+          focusElement.focus();
+        }
+      }, 0);
+    }
+  };
+  
+  const updateListItem = (e, parentIndex, index) => {
+    const newItems = [...article.content[parentIndex].items];
+    newItems[index] = e.target.textContent; // Update text content
+    updateArticleContent({ items: newItems }, article.id, parentIndex);
+  };
+  
+  const renderContentItem = (item, index) => {
+    switch (item.type) {
+      case 'paragraph':
+        return <div style={styles.contentParagraph} onBlur={(e) => handleBlur(e, index)} contentEditable={true}>{item.text}</div>;
+      case 'header':
+        return <div style={styles.contentHeader} onBlur={(e) => handleBlur(e, index)} contentEditable={true}>{item.text}</div>;
+      case 'image':
+        return (
+          <div style={styles.contentImage}>
+            <Photos
+              imageInfo={item}
+              showCaption={true}
+              onCaptionUpdate={(newCaption) => updateImageCaption(newCaption, index)}
+              onImageUpload={(file) => onImageUpload1(file, index)}
+            />
+          </div>
+        );
+        case 'list':
+            return (
+              <div key={index} style={styles.listContainer}>
+                {item.items.map((listItem, listItemIndex) => (
+                  <div
+                    key={listItemIndex}
+                    style={styles.listItem}
+                   
+                  >
+                    <span style={styles.bulletPoint}> • </span>
+                    <span style={styles.listItemText}  contentEditable={true}
+                    key={listItemIndex}
+                    onBlur={(e) => updateListItem(e, index, listItemIndex)}
+                    onKeyDown={(e) => handleListKeyDown(e, index, listItemIndex)}
+                    suppressContentEditableWarning={true}
+                    data-index={`${index}-${listItemIndex}`}>{listItem}</span>
+                  </div>
+                ))}
+              </div>
+            );
+      default:
+        return null;
+    }
+  };
   
   const onPreMainImageUpload = (file) => {
   
@@ -33,9 +124,11 @@ const ArticlePage = ({ article, updateArticleContent, updateMainImageCaption, ad
     console.log("Image uploaded and accessible at:", imageUrl);
   };
   
-  
+  if (article.image?.position === "side") {
+    article.image.position = "bottom";
+  }
   const renderMainImage = (position) => {
-    if (article.image && article.image.source && article.image.position === position) {
+    if (article.image && article.image.source && article.image.position) {
       return (
         <div style={
           position === "bottom"
@@ -48,6 +141,7 @@ const ArticlePage = ({ article, updateArticleContent, updateMainImageCaption, ad
     }
     return null;
   };
+
   const handleBlur = (content, idx) => {
     const newText = content.currentTarget.textContent;
  
@@ -68,41 +162,24 @@ const ArticlePage = ({ article, updateArticleContent, updateMainImageCaption, ad
     console.log("Image uploaded and accessible at:", imageUrl);
   };
 
+ 
   
 
   return (
     <div style={styles.container}>
-      {article.image && article.image.position === "top" && (
-        renderMainImage("top")
-      )}
+      {article.image && article.image.position === "top" && renderMainImage("top")}
       <div style={titleStyle}>{article.title.text}</div>
       <div style={styles.author}>Published on {article.date} by {article.author}</div>
-      {article.image && article.image.position === "bottom" && (
-        renderMainImage("bottom")
-      )}
-      <div style={styles.articleContent}>
-        {article.content.map((item, index) => (
-          <div key={index}>
-            {item.type === "paragraph" && <div style={styles.contentParagraph} onBlur={(e) => handleBlur(e, index)} contentEditable={true}>{item.text}</div>}
-            {item.type === "header" && <div style={styles.contentHeader} onBlur={(e) => handleBlur(e, index)} contentEditable={true}>{item.text}</div>}
-            {item.type === "image" && (
-              <div style={styles.contentImage}>
-                <Photos
-                  imageInfo={item}
-                  showCaption={true}
-                  onCaptionUpdate={(newCaption) => updateImageCaption(newCaption, index)}
+      {article.image && article.image.position === "bottom" && renderMainImage("bottom")}
 
-                  onImageUpload={(file) => onImageUpload1(file, index)}
-                  />
-              </div>
-            )}
-          </div>
-        ))}
-      </div>
+      {article.content.map((item, index) => renderContentItem(item, index))}
       <div style={styles.addButtonContainer}>
-        <button onClick={() => addNewContent("paragraph")} style={styles.addButton}>Add Paragraph</button>
-        <button onClick={() => addNewContent("header")} style={styles.addButton}>Add Header</button>
-        <button onClick={() => addNewContent("image")} style={styles.addButton}>Add Image</button>
+        <button onClick={() => addNewContent("paragraph")} style={styles.addButton}>Paragraph</button>
+        <button onClick={() => addNewContent("header")} style={styles.addButton}>Header</button>
+        <button onClick={() => addNewContent("image")} style={styles.addButton}>Image</button>
+        <button onClick={() => addNewContent("list")} style={styles.addButton}>List</button> {/* Assuming addNewContent can handle list type */}
+        <button onClick={deleteLastContentItem} style={styles.deleteButton}>Delete</button> {/* Delete last item button */}
+
       </div>
     </div>
   );
@@ -129,9 +206,34 @@ const styles = {
     border: 'none',
     outline: 'none',
   },
+  listContainer: {
+    marginTop: theme.spacing.medium,
+  },
+  deleteButton: {
+    background: '#ff6347', // A red color to distinguish it as a delete button
+    color: 'white',
+    border: 'none',
+    padding: '10px 15px',
+    fontSize: '13px',
+    borderRadius: '5px',
+    cursor: 'pointer',
+  },
   articleContent: {
     display: "flex",
     flexDirection: "column",
+    border: 'none',
+    outline: 'none',
+  },
+  listItem: {
+    flexDirection: "row",
+    alignItems: "flex-start", // Align items to start to handle multiline text alignment
+  },
+   bulletPoint: {
+    fontSize: theme.fonts.content.fontSize, // Match font size of list item text or as desired
+  },
+  listItemText: {
+    flex: 1, // Takes full width minus bullet point, allowing for proper wrapping of text
+    ...theme.fonts.content, // Inherits the content font style including 'Georgia'
     border: 'none',
     outline: 'none',
   },
@@ -169,8 +271,8 @@ const styles = {
     marginTop: `${theme.spacing.medium}px`,
   },
   addButton: {
-    padding: '10px 20px',
-    fontSize: '16px',
+    padding: '5px 9px',
+    fontSize: '13px',
     cursor: 'pointer',
   },
   inputStyle: {
