@@ -6,11 +6,11 @@ import ArticleSettings from "./IssueDisplayer/ArticleSettings"; // Import the se
 import AddArticle from './IssueDisplayer/AddArticle'; // Import the new component
 import FetchIssueData from './IssueDisplayer/FetchIssueData';
 import ArticleManagement from './IssueDisplayer/ArticleManagement'; // Adjust path as needed
-
+import ContentManagement from "./IssueDisplayer/ContentManagement"
 const App = () => {
   const [articles, setArticles] = useState({});
   const [currentArticleID, setCurrentArticleID] = useState(null);
-
+  const [currentContentIndex, setCurrentContentIndex]= useState(null);
   const updateArticle = (section, id, update) => {
     const updatedArticles = articles[section].map((article) => {
       if (article.id === id) {
@@ -31,6 +31,35 @@ const App = () => {
       }
     });
   };
+  const moveContent = (direction) => {
+    if (!currentArticleID || currentContentIndex == null) return;
+
+    setArticles(prevArticles => {
+        return Object.keys(prevArticles).reduce((newArticles, section) => {
+            return {
+                ...newArticles,
+                [section]: prevArticles[section].map((article) => {
+                    if (article.id === currentArticleID) {
+                        const contentItems = [...article.content];
+                        if (direction === 'up' && currentContentIndex > 0) {
+                            const temp = contentItems[currentContentIndex - 1];
+                            contentItems[currentContentIndex - 1] = contentItems[currentContentIndex];
+                            contentItems[currentContentIndex] = temp;
+                            setCurrentContentIndex(currentContentIndex - 1);
+                        } else if (direction === 'down' && currentContentIndex < contentItems.length - 1) {
+                            const temp = contentItems[currentContentIndex + 1];
+                            contentItems[currentContentIndex + 1] = contentItems[currentContentIndex];
+                            contentItems[currentContentIndex] = temp;
+                            setCurrentContentIndex(currentContentIndex + 1);
+                        }
+                        return { ...article, content: contentItems };
+                    }
+                    return article;
+                })
+            };
+        }, {});
+    });
+};
 
   const updateArticleDate = (newDate, id) => {
     Object.keys(articles).forEach((section) => {
@@ -224,6 +253,7 @@ const App = () => {
     });
   };
   
+  
   const moveArticle = (direction) => {
     if (!currentArticleID) return;
     const sectionKeys = Object.keys(articles);
@@ -265,6 +295,42 @@ const App = () => {
         if (found) break; // Break the loop once the article has been moved
     }
 };
+const deleteContent = () => {
+  if (!currentArticleID || currentContentIndex === null) return; // Do nothing if no article or content is selected
+
+  setArticles(prevArticles => {
+      // Find the correct section and article
+      const sections = Object.keys(prevArticles);
+      for (const section of sections) {
+          const articleIndex = prevArticles[section].findIndex(article => article.id === currentArticleID);
+          if (articleIndex !== -1) {
+              // Copy the article's content and remove the specified item
+              const newArticle = { ...prevArticles[section][articleIndex] };
+              if (newArticle.content && newArticle.content.length > 0 && currentContentIndex < newArticle.content.length) {
+                  newArticle.content = [
+                      ...newArticle.content.slice(0, currentContentIndex),
+                      ...newArticle.content.slice(currentContentIndex + 1)
+                  ];
+              }
+
+              // Construct the new articles array for the section
+              const newArticlesForSection = [
+                  ...prevArticles[section].slice(0, articleIndex),
+                  newArticle,
+                  ...prevArticles[section].slice(articleIndex + 1)
+              ];
+
+              // Return the updated articles state with the modified section
+              return {
+                  ...prevArticles,
+                  [section]: newArticlesForSection
+              };
+          }
+      }
+      return prevArticles; // In case no modifications are necessary
+  });
+};
+
 
   
   const deleteArticle = () => {
@@ -306,6 +372,8 @@ const App = () => {
             deleteLastContentItem={deleteLastContentItem}
             updateArticleAuthor={updateArticleAuthor}
             updateArticleTitle={updateArticleTitle}
+            setCurrentContentIndex={setCurrentContentIndex}
+            currentContentIndex={currentContentIndex}
           />
         ) : (
           <div style={centerContentStyle}>
@@ -326,6 +394,11 @@ const App = () => {
           <ArticleManagement
           moveArticle={moveArticle}
           deleteArticle={deleteArticle}
+        />
+         <ContentManagement
+          moveContentUp={() => moveContent('up')}
+          moveContentDown={() =>moveContent('down')}
+          deleteContent={deleteContent}
         />
         </div>
         ) : (

@@ -8,10 +8,12 @@ const ArticlePage = ({
   updateArticleContent,
   updateMainImageCaption,
   addNewContent,
-  onMainImageUpload,
+  onMainImageUpload, 
   deleteLastContentItem,
   updateArticleTitle,
   updateArticleAuthor,
+  setCurrentContentIndex,
+  currentContentIndex,
 }) => {
   if (!article) {
     return (
@@ -20,6 +22,8 @@ const ArticlePage = ({
       </div>
     );
   }
+
+  
 
   // Update image caption in the article content
   const updateImageCaption = (newCaption, index) => {
@@ -94,11 +98,22 @@ const ArticlePage = ({
   };
 
   const renderContentItem = (item, index) => {
+    const isSelected = index === currentContentIndex;
+
+    // Base style for selected content
+    const selectedStyle = {
+      outline: '2px solid black', // Example style for selected items
+      backgroundColor: 'transparent', // Light background to highlight selection
+      outlineOffset: '2px',
+
+    };
     switch (item.type) {
       case "paragraph":
         return (
           <div
-            style={styles.contentParagraph}
+
+          onClick={() => setCurrentContentIndex(index)}
+          style={isSelected ? { ...styles.contentParagraph, ...selectedStyle } : styles.contentParagraph}
             onBlur={(e) => handleBlur(e, index)}
             suppressContentEditableWarning={true}
             onPaste={(e) => handlePaste(e)}
@@ -110,7 +125,8 @@ const ArticlePage = ({
       case "header":
         return (
           <div
-            style={styles.contentHeader}
+          onClick={() => setCurrentContentIndex(index)}
+          style={isSelected ? { ...styles.contentHeader, ...selectedStyle } : styles.contentHeader}
             onPaste={(e) => handlePaste(e)}
             onBlur={(e) => handleBlur(e, index)}
             suppressContentEditableWarning={true}
@@ -121,7 +137,10 @@ const ArticlePage = ({
         );
       case "image":
         return (
-          <div style={styles.contentImage}>
+          <div           style={isSelected ? { ...styles.contentImage, ...selectedStyle } : styles.contentImage}
+          onClick={() => setCurrentContentIndex(index)}
+          >
+            
             <Photos
               imageInfo={item}
               showCaption={true}
@@ -134,7 +153,8 @@ const ArticlePage = ({
         );
       case "list":
         return (
-          <div key={index} style={styles.listContainer}>
+          <div key={index}           style={isSelected ? { ...styles.listContainer, ...selectedStyle } : styles.listContainer}
+          onClick={() => setCurrentContentIndex(index)}>
             {item.items.map((listItem, listItemIndex) => (
               <div key={listItemIndex} style={styles.listItem}>
                 <span style={styles.bulletPoint}> • </span>
@@ -284,15 +304,13 @@ const styles = {
     fontSize: `${theme.titleSizes.big.fontSize * SIZE_MULTIPLIER}px`,
     lineHeight: `${theme.titleSizes.big.lineHeight * SIZE_MULTIPLIER}px`,
     marginTop: `${theme.spacing.medium}px`,
-    border: "none",
-    outline: "none",
+   
   },
   author: {
     ...theme.fonts.author,
     fontSize: theme.fonts.author.fontSize * SIZE_MULTIPLIER - 0.01,
     marginTop: theme.spacing.small,
-    border: "none",
-    outline: "none",
+    
   },
   listContainer: {
     marginTop: theme.spacing.medium,
@@ -309,8 +327,7 @@ const styles = {
   articleContent: {
     display: "flex",
     flexDirection: "column",
-    border: "none",
-    outline: "none",
+    
   },
   listItem: {
     flexDirection: "row",
@@ -322,22 +339,19 @@ const styles = {
   listItemText: {
     flex: 1, // Takes full width minus bullet point, allowing for proper wrapping of text
     ...theme.fonts.content, // Inherits the content font style including 'Georgia'
-    border: "none",
-    outline: "none",
+    
   },
   contentParagraph: {
     ...theme.fonts.content,
     marginTop: `${theme.spacing.medium}px`,
-    border: "none",
-    outline: "none",
+    
   },
   contentHeader: {
     ...theme.fonts.content,
     fontSize: `${theme.fonts.content.fontSize * 1.2}px`,
     marginTop: `${theme.spacing.medium}px`,
     marginBottom: `${-theme.spacing.medium}px`,
-    border: "none",
-    outline: "none",
+    
   },
   contentImage: {
     width: "100%",
@@ -364,8 +378,7 @@ const styles = {
     cursor: "pointer",
   },
   inputStyle: {
-    border: "none",
-    outline: "none",
+    
   },
 };
 

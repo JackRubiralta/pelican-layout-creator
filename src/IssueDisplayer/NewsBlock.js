@@ -62,7 +62,7 @@ const NewsBlock = ({
               onTextChange={(newText) =>
                 updateArticleAuthor(newText, article.id)
               }
-              leadingText="By "
+              leadingText="By  "
               style={{
                 ...styles.author,
                 ...styles.inputStyle,
@@ -113,7 +113,7 @@ const NewsBlock = ({
               onTextChange={(newText) =>
                 updateArticleAuthor(newText, article.id)
               }
-              leadingText="By "
+              leadingText="By  "
 
               style={{
                 ...styles.author,
@@ -174,8 +174,7 @@ const styles = {
     flexDirection: "column",
   },
   inputStyle: {
-    border: "none",
-    outline: "none",
+    
   },
 };
 

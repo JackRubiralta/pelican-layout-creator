@@ -14,7 +14,7 @@ const AddArticle = ({ articles, setArticles }) => {
     }
 
     const newArticle = {
-      id: `new-${Date.now()}`,
+      id: `${Date.now()}`,
       title: { text: "New Article", size: "medium" },
       summary: { content: "Summary of the new article.", show: false },
       author: "New Author",

@@ -101,8 +101,6 @@ const styles = {
     marginTop: theme.spacing.small - 5,
     fontSize: "10.5px",
     color: "#474747",
-    border: 'none',
-    outline: 'none',
   },
   imageUploadContainer: {
     display: 'flex',

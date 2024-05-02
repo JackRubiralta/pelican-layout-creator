@@ -40,18 +40,21 @@ const TextEditor = ({ text, onTextChange, style, leadingText = "" }) => {
       editorRef.current.innerText = text;
     }
   }, [text]);
-
+  const combinedStyles = {
+    ...style,
+    outlineOffset: '2px',
+    backgroundColor: 'transparent',
+  };
   return (
     <div>
-      {(leadingText !== '') && <span style={{ ...style }}>By  </span>}
+      {(leadingText !== '') && <span style={{ ...style }}>{leadingText}</span>}
       <span
         ref={editorRef}
         contentEditable={true}
         onInput={handleInput}
         onCompositionStart={handleCompositionStart}
         onCompositionEnd={handleCompositionEnd}
-        style={{ ...style }}
-        onPaste={handlePaste}
+        style={combinedStyles}        onPaste={handlePaste}
       />
     </div>
   );
