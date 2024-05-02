@@ -23,7 +23,7 @@ const Photos = ({
           const img = new Image();
           img.src = URL.createObjectURL(blob);
           img.onload = function () {
-            const screenWidth = 375 - theme.spacing.medium * 2;
+            const screenWidth = 350 - theme.spacing.medium * 2;
             const scaleFactor = this.width / screenWidth;
             setImageHeight(this.height / scaleFactor);
           };

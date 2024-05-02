@@ -293,7 +293,7 @@ const App = () => {
 
         
       </div>
-      <div style={phoneContainer}>
+      <div style={settingsContainer}>
 
       {currentArticle ? (
         <div>
@@ -317,7 +317,22 @@ const App = () => {
 const phoneContainer = {
   marginTop: "50px",
 
-  width: "375px", // Typical width of a modern smartphone
+  width: "350px", // Typical width of a modern smartphone
+  height: "780px", // Typical height of a modern smartphone
+  border: "1px solid #ddd", // Adds a subtle border to mimic a phone
+  margin: "0", // Centers the container on the page
+  boxShadow: "0 0 10px rgba(0,0,0,0.1)", // Adds a subtle shadow for a 3D effect
+  overflowY: "scroll", // Allows vertical scrolling within the container
+  overflowX: "hidden", // Prevents horizontal scrolling
+  WebkitOverflowScrolling: "touch", // Optimizes scrolling on iOS devices
+  scrollbarWidth: "none", // Hides scrollbar for Firefox
+  msOverflowStyle: "none", // Hides scrollbar for IE 10+
+};
+
+const settingsContainer = {
+  marginTop: "50px",
+
+  width: "275px", // Typical width of a modern smartphone
   height: "780px", // Typical height of a modern smartphone
   border: "1px solid #ddd", // Adds a subtle border to mimic a phone
   margin: "0", // Centers the container on the page
@@ -331,7 +346,7 @@ const phoneContainer = {
 const columnContainer = {
   marginTop: "50px",
 
-  width: "402px", // Typical width of a modern smartphone
+  width: "420px", // Typical width of a modern smartphone
   height: "780px", // Typical height of a modern smartphone
   border: "1px solid #ddd", // Adds a subtle border to mimic a phone
   margin: "0", // Centers the container on the page

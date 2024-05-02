@@ -21,7 +21,7 @@ const AddArticle = ({ articles, setArticles }) => {
       date: new Date().toISOString().slice(0, 10),
       length: 0,
       content: [{ type: 'paragraph', text: "Content of the new article." }],
-      image: { source: "", caption: "", show: false, position: "top" }
+      image: { source: "", caption: "", show: false, position: "bottom" }
     };
 
     const updatedArticles = {
