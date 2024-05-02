@@ -304,6 +304,8 @@ const App = () => {
             updateMainImageCaption={updateMainImageCaption}
             addNewContent={addNewContent}
             deleteLastContentItem={deleteLastContentItem}
+            updateArticleAuthor={updateArticleAuthor}
+            updateArticleTitle={updateArticleTitle}
           />
         ) : (
           <div style={centerContentStyle}>

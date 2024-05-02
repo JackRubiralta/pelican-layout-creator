@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import TextEditor from "./TextEditor";
 
 // Adjust the import path to where you've saved theme.js
 import { theme } from "./theme";
@@ -33,10 +34,7 @@ const Photos = ({
     }
   }, [imageUrl, isSquare]);
 
-  const handleBlur = (e) => {
-    const newCaption = e.target.textContent;
-    onCaptionUpdate(newCaption);
-  };
+
 
   const handleFileInput = (e) => {
     const file = e.target.files[0];
@@ -44,11 +42,7 @@ const Photos = ({
       onImageUpload(file, imageInfo.id);  // Assuming you pass the image ID for reference
     }
   };
-  const handlePaste = (e) => {
-    e.preventDefault(); // Stop data from being inserted
-    const text = e.clipboardData.getData('text/plain'); // Get text representation of clipboard
-    document.execCommand("insertHTML", false, text); // Insert text manually where the cursor is
-};
+
 
   if (!imageInfo || !imageInfo.source) {
     return (
@@ -67,16 +61,12 @@ const Photos = ({
         </div>
       </div>
       {showCaption && (
-        <div
-          style={styles.caption}
-          contentEditable={true}
-          onPaste={(e) => handlePaste(e)}
-
-          suppressContentEditableWarning={true}
-          onBlur={(e) => handleBlur(e)}
-        >
-          {imageInfo.caption}
-        </div>
+       <TextEditor
+       text={imageInfo.caption}
+       onTextChange={(newText) => onCaptionUpdate(newText)}
+       style={styles.caption}
+     />
+     
       )}
     </div>
     );
@@ -93,17 +83,13 @@ const Photos = ({
         src={imageUrl}
         alt={imageInfo.caption || "Image"}
       />
-      {showCaption && (
-        <div
-          style={styles.caption}
-          contentEditable={true}
-          onPaste={(e) => handlePaste(e)}
 
-          suppressContentEditableWarning={true}
-          onBlur={(e) => handleBlur(e)}
-        >
-          {imageInfo.caption}
-        </div>
+      {showCaption && (
+        <TextEditor
+        text={imageInfo.caption}
+        onTextChange={(newText) => onCaptionUpdate(newText)}
+        style={styles.caption}
+      />
       )}
     </div>
   );

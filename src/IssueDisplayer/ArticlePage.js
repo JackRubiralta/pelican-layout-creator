@@ -1,6 +1,7 @@
 import React from "react";
 import Photos from "./Photos"; // Adapt Photos for web as needed
 import { theme } from "./theme";
+import TextEditor from "./TextEditor";
 
 const ArticlePage = ({
   article,
@@ -9,6 +10,8 @@ const ArticlePage = ({
   addNewContent,
   onMainImageUpload,
   deleteLastContentItem,
+  updateArticleTitle,
+  updateArticleAuthor,
 }) => {
   if (!article) {
     return (
@@ -222,10 +225,19 @@ const ArticlePage = ({
       {article.image &&
         article.image.position === "top" &&
         renderMainImage("top")}
-      <div style={titleStyle}>{article.title.text}</div>
-      <div style={styles.author}>
-        Published on {article.date} by {article.author}
-      </div>
+      <TextEditor
+        text={article.title.text}
+        onTextChange={(text) => updateArticleTitle(text, article.id)}
+        style={{ ...titleStyle }}
+      />
+
+      <TextEditor
+        text={article.author}
+        onTextChange={(text) => updateArticleAuthor(text, article.id)}
+        style={{ ...styles.author }}
+        leadingText="By "
+
+      />
       {article.image &&
         article.image.position === "bottom" &&
         renderMainImage("bottom")}
@@ -277,7 +289,8 @@ const styles = {
   },
   author: {
     ...theme.fonts.author,
-    marginTop: `${theme.spacing.small}px`,
+    fontSize: theme.fonts.author.fontSize * SIZE_MULTIPLIER - 0.01,
+    marginTop: theme.spacing.small,
     border: "none",
     outline: "none",
   },

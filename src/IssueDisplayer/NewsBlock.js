@@ -1,6 +1,7 @@
 import React from "react";
 import Photos from "./Photos"; // Make sure Photos is adapted for web use
 import { theme } from "./theme";
+import TextEditor from "./TextEditor";
 
 const NewsBlock = ({
   article,
@@ -37,56 +38,37 @@ const NewsBlock = ({
     // For demonstration, we'll just log the imageUrl which can be used directly in <img> tags
     console.log("Image uploaded and accessible at:", imageUrl);
   };
-  const handlePaste = (e) => {
-    e.preventDefault(); // Stop data from being inserted
-    const text = e.clipboardData.getData("text/plain"); // Get text representation of clipboard
-    document.execCommand("insertHTML", false, text); // Insert text manually where the cursor is
-  };
+
 
   return (
     <div style={styles.storyWrapper} onClick={navigateToArticle}>
       {image.position === "side" && image.show && (
         <div style={{ display: "flex", alignItems: "flex-start" }}>
           <div style={{ flex: 1, paddingRight: theme.spacing.medium }}>
-            <div
-              contentEditable="true"
-              suppressContentEditableWarning={true}
-              onPaste={(e) => handlePaste(e)}
+          <TextEditor
+              text={title.text}
+              onTextChange={(text) => updateArticleTitle(text, article.id)}
               style={{ ...titleStyle, ...styles.inputStyle }}
-              onBlur={(e) =>
-                updateArticleTitle(e.currentTarget.textContent, article.id)
-              }
-            >
-              {title.text}
-            </div>
+            />
             {summary && summary.show && (
-              <div
-                contentEditable="true"
-                suppressContentEditableWarning={true}
-                onPaste={(e) => handlePaste(e)}
-                style={{ ...styles.summary, ...styles.inputStyle }}
-                onBlur={(e) =>
-                  updateArticleSummary(e.currentTarget.textContent, article.id)
-                }
-              >
-                {summary.content}
-              </div>
+               <TextEditor
+               text={summary.content}
+               onTextChange={(newText) => updateArticleSummary(newText, article.id)}
+               style={{ ...styles.summary, ...styles.inputStyle }}
+             />
             )}
-            <div
-              contentEditable="true"
-              suppressContentEditableWarning={true}
-              onPaste={(e) => handlePaste(e)}
+            <TextEditor
+              text={author}
+              onTextChange={(newText) =>
+                updateArticleAuthor(newText, article.id)
+              }
+              leadingText="By "
               style={{
                 ...styles.author,
                 ...styles.inputStyle,
                 marginTop: theme.spacing.small,
               }}
-              onBlur={(e) =>
-                updateArticleAuthor(e.currentTarget.textContent, article.id)
-              }
-            >
-              {author}
-            </div>
+            />
           </div>
           <div
             style={{
@@ -113,45 +95,32 @@ const NewsBlock = ({
             <Photos imageInfo={image} onImageUpload={onPreMainImageUpload} />
           )}
           <div style={styles.storyContent}>
-            <div
-              contentEditable="true"
-              suppressContentEditableWarning={true}
-              onPaste={(e) => handlePaste(e)}
+            <TextEditor
+              text={title.text}
+              onTextChange={(text) => updateArticleTitle(text, article.id)}
               style={{ ...titleStyle, ...styles.inputStyle }}
-              onBlur={(e) =>
-                updateArticleTitle(e.currentTarget.textContent, article.id)
-              }
-            >
-              {title.text}
-            </div>
+            />
             {summary && summary.show && (
-              <div
-                contentEditable="true"
-                suppressContentEditableWarning={true}
-                onPaste={(e) => handlePaste(e)}
-                style={{ ...styles.summary, ...styles.inputStyle }}
-                onBlur={(e) =>
-                  updateArticleSummary(e.currentTarget.textContent, article.id)
-                }
-              >
-                {summary.content}
-              </div>
+              <TextEditor
+              text={summary.content}
+              onTextChange={(newText) => updateArticleSummary(newText, article.id)}
+              style={{ ...styles.summary, ...styles.inputStyle }}
+            />
+            
             )}
-            <div
-              contentEditable="true"
-              suppressContentEditableWarning={true}
-              onPaste={(e) => handlePaste(e)}
+            <TextEditor
+              text={author}
+              onTextChange={(newText) =>
+                updateArticleAuthor(newText, article.id)
+              }
+              leadingText="By "
+
               style={{
                 ...styles.author,
                 ...styles.inputStyle,
                 marginTop: theme.spacing.small,
               }}
-              onBlur={(e) =>
-                updateArticleAuthor(e.currentTarget.textContent, article.id)
-              }
-            >
-              {author}
-            </div>
+            />
           </div>
           {image.position === "bottom" && image.show && (
             <div style={{ marginTop: theme.spacing.small }}>
@@ -174,6 +143,11 @@ const styles = {
     backgroundColor: "#fff",
     position: "relative",
     paddingVertical: "0px",
+  },
+  authorContainer: {
+    display: 'flex', // Ensures that the label and text editor are in a row
+    alignItems: 'center', // Vertically aligns the label and text editor
+    // Additional styling might be necessary depending on your design requirements
   },
   bigTitle: {
     ...theme.fonts.title,

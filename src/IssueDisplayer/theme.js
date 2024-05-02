@@ -18,7 +18,7 @@ export const theme = {
     },
     author: {
       fontFamily: "Georgia, serif",
-      fontSize: "12.2px",
+      fontSize: 12.2,
       color: "#727272",
       margin: 0,
       padding: 0,
