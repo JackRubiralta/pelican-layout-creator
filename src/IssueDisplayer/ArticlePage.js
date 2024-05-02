@@ -192,9 +192,7 @@ const ArticlePage = ({
     console.log("Image uploaded and accessible at:", imageUrl);
   };
 
-  if (article.image?.position === "side") {
-    article.image.position = "bottom";
-  }
+
   const renderMainImage = (position) => {
     if (article.image && article.image.source && article.image.position) {
       return (
@@ -259,7 +257,7 @@ const ArticlePage = ({
 
       />
       {article.image &&
-        article.image.position === "bottom" &&
+        (article.image.position === "side" || article.image.position === "bottom") &&
         renderMainImage("bottom")}
 
       {article.content.map((item, index) => renderContentItem(item, index))}

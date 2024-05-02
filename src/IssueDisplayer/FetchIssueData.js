@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 import _ from 'lodash';
 
@@ -14,7 +14,13 @@ const FetchIssueData = ({ setArticles, articles }) => {
   const FILE_PATH = `data/issue${issueNumber}/articles.json`;
   const apiUrl = `https://api.github.com/repos/${REPO_NAME}/contents/${FILE_PATH}`;
   const IMAGE_DIR = 'data/images';
-
+  useEffect(() => {
+    // On component mount, try to fetch the token from local storage
+    const token = localStorage.getItem("githubToken");
+    if (token) {
+      setGithubToken(token);
+    }
+  }, []);
   const handleFetchData = async (e) => {
     e.preventDefault();
     if (!githubToken || !issueNumber) {
@@ -23,6 +29,7 @@ const FetchIssueData = ({ setArticles, articles }) => {
     }
     setError("");
     setLoading(true);
+    localStorage.setItem("githubToken", githubToken);
 
     try {
       const response = await axios.get(apiUrl, {
