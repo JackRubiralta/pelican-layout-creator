@@ -320,7 +320,7 @@ const phoneContainer = {
   width: "375px", // Typical width of a modern smartphone
   height: "780px", // Typical height of a modern smartphone
   border: "1px solid #ddd", // Adds a subtle border to mimic a phone
-  margin: "auto", // Centers the container on the page
+  margin: "0", // Centers the container on the page
   boxShadow: "0 0 10px rgba(0,0,0,0.1)", // Adds a subtle shadow for a 3D effect
   overflowY: "scroll", // Allows vertical scrolling within the container
   overflowX: "hidden", // Prevents horizontal scrolling
