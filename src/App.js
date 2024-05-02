@@ -224,30 +224,48 @@ const App = () => {
     });
   };
   
-
   const moveArticle = (direction) => {
     if (!currentArticleID) return;
     const sectionKeys = Object.keys(articles);
-    for (const section of sectionKeys) {
-      const index = articles[section].findIndex(article => article.id === currentArticleID);
-      if (index === -1) continue; // Current article not found in this section
-  
-      // Calculate new index based on direction
-      const newIndex = direction === 'up' ? index - 1 : index + 1;
-      if (newIndex < 0 || newIndex >= articles[section].length) continue; // Ignore if new index is out of bounds
-  
-      // Swap articles in the array
-      const newArticlesList = [...articles[section]];
-      [newArticlesList[index], newArticlesList[newIndex]] = [newArticlesList[newIndex], newArticlesList[index]];
-  
-      // Update the articles state with the new array
-      setArticles(prev => ({
-        ...prev,
-        [section]: newArticlesList
-      }));
-      break; // Exit after moving the article
+    let found = false;
+
+    for (let i = 0; i < sectionKeys.length; i++) {
+        const section = sectionKeys[i];
+        const index = articles[section].findIndex(article => article.id === currentArticleID);
+        if (index === -1) continue; // Current article not found in this section
+
+        const newIndex = direction === 'up' ? index - 1 : index + 1;
+        if (newIndex >= 0 && newIndex < articles[section].length) {
+            // Swap within the same section
+            const newArticlesList = [...articles[section]];
+            [newArticlesList[index], newArticlesList[newIndex]] = [newArticlesList[newIndex], newArticlesList[index]];
+            setArticles(prev => ({
+                ...prev,
+                [section]: newArticlesList
+            }));
+            found = true;
+        } else {
+            // Moving between sections
+            let targetSectionIndex = direction === 'up' ? i - 1 : i + 1;
+            if (targetSectionIndex < 0 || targetSectionIndex >= sectionKeys.length) continue; // Check if target section is out of bounds
+            const targetSection = sectionKeys[targetSectionIndex];
+            const articleToMove = articles[section].splice(index, 1)[0]; // Remove article from current section
+            if (direction === 'down') {
+                articles[targetSection].unshift(articleToMove); // Add to the beginning of the target section
+            } else {
+                articles[targetSection].push(articleToMove); // Add to the end of the target section
+            }
+            setArticles(prev => ({
+                ...prev,
+                [section]: articles[section],
+                [targetSection]: articles[targetSection]
+            }));
+            found = true;
+        }
+        if (found) break; // Break the loop once the article has been moved
     }
-  };
+};
+
   
   const deleteArticle = () => {
     if (!currentArticleID) return;
@@ -288,7 +306,9 @@ const App = () => {
             deleteLastContentItem={deleteLastContentItem}
           />
         ) : (
+          <div style={centerContentStyle}>
           <p>Select an article</p>
+      </div>
         )}
 
         
@@ -307,7 +327,9 @@ const App = () => {
         />
         </div>
         ) : (
+          <div style={centerContentStyle}>
           <p>Select an article</p>
+      </div>
         )}
       </div>
 
@@ -328,7 +350,12 @@ const phoneContainer = {
   scrollbarWidth: "none", // Hides scrollbar for Firefox
   msOverflowStyle: "none", // Hides scrollbar for IE 10+
 };
-
+const centerContentStyle = {
+  display: 'flex',
+  justifyContent: 'center',
+  alignItems: 'center',
+  height: '100%', // This ensures it takes full height of its parent
+};
 const settingsContainer = {
   marginTop: "50px",
 
