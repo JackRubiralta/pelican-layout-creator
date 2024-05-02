@@ -13,7 +13,6 @@ const Photos = ({
   const [imageHeight, setImageHeight] = useState(200); // Default height
   const imageUrl = imageInfo.source;
 
-
   useEffect(() => {
     if (imageUrl && !isSquare) {
       // Fetch image dimensions if necessary
@@ -45,6 +44,11 @@ const Photos = ({
       onImageUpload(file, imageInfo.id);  // Assuming you pass the image ID for reference
     }
   };
+  const handlePaste = (e) => {
+    e.preventDefault(); // Stop data from being inserted
+    const text = e.clipboardData.getData('text/plain'); // Get text representation of clipboard
+    document.execCommand("insertHTML", false, text); // Insert text manually where the cursor is
+};
 
   if (!imageInfo || !imageInfo.source) {
     return (
@@ -66,6 +70,8 @@ const Photos = ({
         <div
           style={styles.caption}
           contentEditable={true}
+          onPaste={(e) => handlePaste(e)}
+
           suppressContentEditableWarning={true}
           onBlur={(e) => handleBlur(e)}
         >
@@ -91,6 +97,8 @@ const Photos = ({
         <div
           style={styles.caption}
           contentEditable={true}
+          onPaste={(e) => handlePaste(e)}
+
           suppressContentEditableWarning={true}
           onBlur={(e) => handleBlur(e)}
         >
