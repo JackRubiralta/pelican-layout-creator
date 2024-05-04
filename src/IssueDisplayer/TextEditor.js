@@ -16,7 +16,8 @@ const TextEditor = ({ text, onTextChange, style, leadingText = "" }) => {
 
   const handlePaste = (e) => {
     e.preventDefault(); // Stop data from being inserted
-    const text = e.clipboardData.getData("text/plain"); // Get text representation of clipboard
+    let text = e.clipboardData.getData("text/plain");
+    text = text.replace(/[\r\n]+/g, ''); // Strip all newlines from pasted text
     document.execCommand("insertHTML", false, text); // Insert text manually where the cursor is
   };
 
@@ -28,9 +29,15 @@ const TextEditor = ({ text, onTextChange, style, leadingText = "" }) => {
   // Handle composition end
   const handleCompositionEnd = (event) => {
     setIsComposing(false);
-    // Call onTextChange at the end of composition
     if (onTextChange) {
       onTextChange(event.target.innerText);
+    }
+  };
+
+  // Prevent Enter from creating a new line
+  const handleKeyDown = (event) => {
+    if (event.key === 'Enter') {
+      event.preventDefault(); // Stop the Enter key from creating a newline
     }
   };
 
@@ -40,21 +47,24 @@ const TextEditor = ({ text, onTextChange, style, leadingText = "" }) => {
       editorRef.current.innerText = text;
     }
   }, [text]);
+
   const combinedStyles = {
     ...style,
     outlineOffset: '2px',
     backgroundColor: 'transparent',
   };
+
   return (
-    <div>
-      {(leadingText !== '') && <span style={{ ...style }}>{leadingText}</span>}
+    <div style={combinedStyles}>
+      {(leadingText !== '') && <span >{leadingText}</span>}
       <span
         ref={editorRef}
         contentEditable={true}
         onInput={handleInput}
         onCompositionStart={handleCompositionStart}
         onCompositionEnd={handleCompositionEnd}
-        style={combinedStyles}        onPaste={handlePaste}
+        onKeyDown={handleKeyDown}
+        onPaste={handlePaste}
       />
     </div>
   );

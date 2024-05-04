@@ -110,30 +110,22 @@ const ArticlePage = ({
     switch (item.type) {
       case "paragraph":
         return (
-          <div
-
+          <TextEditor
           onClick={() => setCurrentContentIndex(index)}
-          style={isSelected ? { ...styles.contentParagraph, ...selectedStyle } : styles.contentParagraph}
-            onBlur={(e) => handleBlur(e, index)}
-            suppressContentEditableWarning={true}
-            onPaste={(e) => handlePaste(e)}
-            contentEditable={true}
-          >
-            {item.text}
-          </div>
+        text={item.text}
+        onTextChange={(text) => updateArticleContent({ text: text }, article.id, index)}
+        style={{...styles.contentParagraph }}
+      />
+         
         );
       case "header":
         return (
-          <div
+          <TextEditor
           onClick={() => setCurrentContentIndex(index)}
-          style={isSelected ? { ...styles.contentHeader, ...selectedStyle } : styles.contentHeader}
-            onPaste={(e) => handlePaste(e)}
-            onBlur={(e) => handleBlur(e, index)}
-            suppressContentEditableWarning={true}
-            contentEditable={true}
-          >
-            {item.text}
-          </div>
+        text={item.text}
+        onTextChange={(text) => updateArticleContent({ text: text }, article.id, index)}
+        style={{...styles.contentHeader }}
+      />
         );
       case "image":
         return (
